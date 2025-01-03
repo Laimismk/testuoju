@@ -29,6 +29,7 @@ const detectCode = () => {
     for (const barcode of codes)  {
       // Log the barcode to the console
       console.log(barcode)
+      document.getElementById("result").textContent = "Nuskaitytas tekstas lllll"
     }
   }).catch(err => {
     // Log an error if one happens
