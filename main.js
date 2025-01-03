@@ -19,6 +19,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 // Create new barcode detector
 const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
 const enableAudioButton = document.getElementById('enableAudio');
+const audioElement = document.getElementById('audio');
 
     let audioEnabled = false; // Track if audio is enabled by the user
 
@@ -41,7 +42,7 @@ const detectCode = () => {
       // Log the barcode to the console
       console.log(barcode)
       //document.getElementById("tekstas").textContent=barcode.rawValue
-      document.getElementById("tekstas").textContent="Grojam4"
+      document.getElementById("tekstas").textContent="Grojam5"
       // Show message "NUSKAITYTA" on the screen
       //messageElement.style.display = 'block';  // Display the message
       //setTimeout(() => {
