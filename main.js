@@ -35,6 +35,11 @@ const detectCode = () => {
       //setTimeout(() => {
       //  messageElement.style.display = 'none'; // Hide message after 2 seconds
       //}, 2000);
+      // Set the audio source and play the audio
+      audioElement.src = barcode.rawValue;  // Set the source to the QR code URL
+      audioElement.play().catch(err => console.error("Audio playback error:", err));
+
+
     }
   }).catch(err => {
     // Log an error if one happens
