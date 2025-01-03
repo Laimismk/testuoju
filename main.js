@@ -17,7 +17,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 }
 
 // Create new barcode detector
-const barcodeDetector = new barcodeDetector({ formats: ['qr_code'] });
+const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
 
 // Detect code function 
 const detectCode = () => {
@@ -29,7 +29,7 @@ const detectCode = () => {
     for (const barcode of codes)  {
       // Log the barcode to the console
       console.log(barcode)
-      document.getElementById("result").textContent = "Nuskaitytas tekstas lllll"
+      document.getElementById("result").textContent = "Nuskaityta"
     }
   }).catch(err => {
     // Log an error if one happens
