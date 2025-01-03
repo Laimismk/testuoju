@@ -5,7 +5,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   // Use video without audio
   const constraints = { 
     video: {
-      facingMode: "environment"  // Set facingMode to "environment" for back camera
+      facingMode: {
+        exact: "environment"
+      }
     },
     audio: false
   }
