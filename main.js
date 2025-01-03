@@ -18,6 +18,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
 // Create new barcode detector
 const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+const enableAudioButton = document.getElementById('enableAudio');
+
+    let audioEnabled = false; // Track if audio is enabled by the user
+
+    // Enable audio playback on button click
+    enableAudioButton.addEventListener('click', () => {
+      audioEnabled = true;
+      enableAudioButton.style.display = 'none'; // Hide the button after enabling audio
+    });
+
+
 
 // Detect code function 
 const detectCode = () => {
@@ -30,19 +41,21 @@ const detectCode = () => {
       // Log the barcode to the console
       console.log(barcode)
       //document.getElementById("tekstas").textContent=barcode.rawValue
-      document.getElementById("tekstas").textContent="Grojam3"
+      document.getElementById("tekstas").textContent="Grojam4"
       // Show message "NUSKAITYTA" on the screen
       //messageElement.style.display = 'block';  // Display the message
       //setTimeout(() => {
       //  messageElement.style.display = 'none'; // Hide message after 2 seconds
       //}, 2000);
       // Set the audio source and play the audio
-      audioElement.src = barcode.rawValue;  // Set the source to the QR code URL
-      audioElement.play().catch(err => {
-        console.error("Garso paleidimo klaida:", err);
-        document.getElementById("tekstas").textContent= "Nepavyko paleisti garso.";
-      });
 
+      if (audioEnabled) {
+        audioElement.src = barcode.rawValue;  // Set the source to the QR code URL
+        audioElement.play().catch(err => {
+          console.error("Garso paleidimo klaida:", err);
+          document.getElementById("tekstas").textContent= "Nepavyko paleisti garso.";
+        });
+      }
 
     }
   }).catch(err => {
