@@ -29,7 +29,8 @@ const detectCode = () => {
     for (const barcode of codes)  {
       // Log the barcode to the console
       console.log(barcode)
-      document.getElementById("tekstas").textContent=barcode.rawValue
+      //document.getElementById("tekstas").textContent=barcode.rawValue
+      document.getElementById("tekstas").textContent="Grojam"
       // Show message "NUSKAITYTA" on the screen
       //messageElement.style.display = 'block';  // Display the message
       //setTimeout(() => {
