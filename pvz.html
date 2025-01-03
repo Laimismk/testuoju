@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Kodo Skaitytuvas</title>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <style>
+        #reader {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">QR Kodo Skaitytuvas</h1>
+    <div id="reader"></div>
+    <p id="result" style="text-align: center; font-size: 1.2em; margin-top: 20px;">Nuskaitytas tekstas bus rodomas čia.</p>
+
+    <script>
+        // Funkcija, kuri apdoroja nuskaitytą QR kodą
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById("result").textContent = `Nuskaitytas tekstas: ${decodedText}`;
+        }
+
+        function onScanFailure(error) {
+            // Galima įrašyti klaidas į konsolę (jeigu reikia debug'inti)
+            console.warn(`QR kodo skaitymo klaida: ${error}`);
+        }
+
+        // Inicializuojame skaitytuvą
+        const html5QrCode = new Html5Qrcode("reader");
+        const qrCodeConfig = { fps: 10, qrbox: 250 };
+
+        // Paleidžiame kamerą
+        Html5Qrcode.getCameras().then(cameras => {
+            if (cameras.length > 0) {
+                html5QrCode.start(
+                    cameras[0].id, // Pirmoji kamera
+                    qrCodeConfig,
+                    onScanSuccess,
+                    onScanFailure
+                );
+            } else {
+                alert("Kameros nerasta!");
+            }
+        }).catch(err => {
+            console.error("Klaida gaunant kamerų sąrašą: ", err);
+        });
+    </script>
+</body>
+</html>
