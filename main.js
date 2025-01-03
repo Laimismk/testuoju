@@ -29,7 +29,8 @@ const detectCode = () => {
     for (const barcode of codes)  {
       // Log the barcode to the console
       console.log(barcode)
-      // Show message "NUSKAITYTA" on the screen
+      // Show message with the barcode content
+      messageElement.innerText = `NUSKAITYTA: ${barcode.rawValue}`;  // Display the decoded value
       messageElement.style.display = 'block';  // Display the message
       setTimeout(() => {
         messageElement.style.display = 'none'; // Hide message after 2 seconds
