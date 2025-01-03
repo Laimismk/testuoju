@@ -30,11 +30,11 @@ const detectCode = () => {
       // Log the barcode to the console
       console.log(barcode)
       // Show message with the barcode content
-      messageElement.innerText = `NUSKAITYTA: ${barcode.rawValue}`;  // Display the decoded value
+      messageElement.textContent = `NUSKAITYTA: ${barcode.rawValue}`;  // Display the decoded value
       messageElement.style.display = 'block';  // Display the message
       setTimeout(() => {
-        messageElement.style.display = 'none'; // Hide message after 2 seconds
-      }, 2000);
+        messageElement.style.display = 'none'; // Hide message after 5 seconds
+      }, 5000);
     }
   }).catch(err => {
     // Log an error if one happens
