@@ -4,7 +4,9 @@ const video = document.querySelector('#video')
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   // Use video without audio
   const constraints = { 
-    video: true,
+    video: {
+      facingMode: "environment"  // Set facingMode to "environment" for back camera
+    },
     audio: false
   }
   
@@ -13,7 +15,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 }
 
 // Create new barcode detector
-const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+const barcodeDetector = new barcodeDetector({ formats: ['qr_code'] });
 
 // Detect code function 
 const detectCode = () => {
