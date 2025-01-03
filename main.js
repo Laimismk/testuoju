@@ -30,7 +30,7 @@ const detectCode = () => {
       // Log the barcode to the console
       console.log(barcode)
       //document.getElementById("tekstas").textContent=barcode.rawValue
-      document.getElementById("tekstas").textContent="Grojam2"
+      document.getElementById("tekstas").textContent="Grojam3"
       // Show message "NUSKAITYTA" on the screen
       //messageElement.style.display = 'block';  // Display the message
       //setTimeout(() => {
@@ -40,7 +40,7 @@ const detectCode = () => {
       audioElement.src = barcode.rawValue;  // Set the source to the QR code URL
       audioElement.play().catch(err => {
         console.error("Garso paleidimo klaida:", err);
-        tekstasElement.textContent = "Nepavyko paleisti garso.";
+        document.getElementById("tekstas").textContent= "Nepavyko paleisti garso.";
       });
 
 
