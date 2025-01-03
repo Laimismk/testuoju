@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kameros Palaikymo Testas</title>
+</head>
+<body>
+    <h1>Ar palaikoma kamera?</h1>
+    <p id="status">Tikrinama...</p>
+    <script>
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            document.getElementById("status").textContent = "Jūsų naršyklė palaiko kamerą!";
+        } else {
+            document.getElementById("status").textContent = "Deja, jūsų naršyklė nepalaiko kamerų funkcijos.";
+        }
+    </script>
+</body>
+</html>
