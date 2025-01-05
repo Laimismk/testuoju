@@ -6,7 +6,7 @@
   <title>LT muzikos skaneris</title>
 </head>
 <body>
-    <h2 style="text-align: center;">LT muzikos skaneris1</h2>
+    <h2 style="text-align: center;">LT muzikos skaneris2</h2>
     <button id="pradedamButton" width="100%" style="padding: 2% 4%; font-size: 18px;">
         Pradedam žaisti
     </button>
@@ -21,29 +21,40 @@
 
 
     <script>
+
         // Pradinis mygtukas
         pradedamButton.addEventListener('click', () => {
             pradedamSkanavima=true
             pradedamGrojima=false
-        pradedamButton.style.display = 'none'; // Paslepiam mygtuką kai paspaudžiam
-        // Check if device has camera
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            // Use video without audio
-            const constraints = { 
-                video: {
-                    facingMode: {
-                        exact: "environment"
-                    }
-                },
-                audio: false
-            }  
-            // Start video stream
-            navigator.mediaDevices.getUserMedia(constraints).then(stream => video.srcObject = stream);
-        }
+            pradedamButton.style.display = 'none'; // Paslepiam mygtuką kai paspaudžiam   
+            ijungiamVideo()     
         });
 
 
-       
+        function ijungiamVideo(){
+            // Patikrinam ar irenginys turi kamera
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                // Use video without audio
+                const constraints = { 
+                    video: {
+                        facingMode: {
+                            exact: "environment"
+                        }
+                    },
+                    audio: false
+                }  
+                // Start video stream
+                navigator.mediaDevices.getUserMedia(constraints).then(stream => video.srcObject = stream);
+            }
+        }
+
+
+
+    // Run detect code function every 100 milliseconds
+    //setInterval(detectCode, 100);
+    
+
+    
 
 
 
