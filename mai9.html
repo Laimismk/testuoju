@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LT muzikos skaneris</title>
+  <style>
+    body {
+      background-color: #000; /* Juodas fonas */
+      color: #fff; /* Šviesūs tekstai */
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #mainImage {
+      position: absolute;
+      top: 20%; /* 20% nuo viršaus */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%; /* 80% ekrano pločio */
+      max-width: 600px; /* Maksimalus plotis */
+    }
+
+    #pradedamButton {
+      position: absolute;
+      top: 60%; /* Padėtis po paveikslėlio */
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 30px;
+      font-size: 20px;
+      color: #000;
+      background-color: #fff;
+      border: none;
+      border-radius: 10px; /* Suapvalinti kampai */
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    #pradedamButton:hover {
+      background-color: #333; /* Tamsesnė spalva užvedus pelę */
+      color: #fff; /* Tekstas tampa baltas */
+    }
+
+    #tekstas {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 24px;
+    }
+
+    #controls {
+      text-align: center;
+      display: none;
+      margin-top: 20px;
+    }
+
+    #controls button {
+      width: 80%;
+      max-width: 300px;
+      height: 50px;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 18px;
+      color: #000;
+      background-color: #fff;
+      border: none;
+      border-radius: 10px; /* Suapvalinti kampai */
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    #grotiButton.groti {
+      background-color: #4CAF50; /* Žalia spalva */
+      color: #fff;
+    }
+
+    #grotiButton.stabdyti {
+      background-color: #F44336; /* Raudona spalva */
+      color: #fff;
+    }
+
+    #skanavimasIsNaujo {
+      background-color: #FFEB3B; /* Geltona spalva */
+      color: #000;
+    }
+
+    #controls button:hover {
+      opacity: 0.9; /* Mažas efektas užvedus pelę */
+    }
+
+    #videoContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <img id="mainImage" src="main.png" alt="Main Image" />
+  <button id="pradedamButton">Pradedam žaidimą</button>
+  <h2 id="tekstas" style="display: none;">Pasiruošę nuskaityti QR kodą...</h2>
+  <div id="videoContainer" style="display: none;">
+    <video id="video" autoplay></video>
+  </div>
+  <div id="controls">
+    <button id="grotiButton" class="grotiButton.groti">Groti</button>
+    <button id="skanavimasIsNaujo" class="skanavimasIsNaujo">Skanuoti iš naujo</button>
+  </div>
+  <audio id="audio" style="display: none;"></audio>
+
+  <script>
+    const video = document.getElementById('video');
+    const videoContainer = document.getElementById('videoContainer');
+    const audioElement = document.getElementById('audio');
+    const tekstasElement = document.getElementById('tekstas');
+    const pradedamButton = document.getElementById('pradedamButton');
+    const grotiButton = document.getElementById('grotiButton');
+    const skanavimasIsNaujo = document.getElementById('skanavimasIsNaujo');
+    const controls = document.getElementById('controls');
+    const mainImage = document.getElementById('mainImage');
+
+    let barcodeDetector;
+    let skanavimasPradetas = false;
+    let muzikaGroja = false;
+
+    // Pradėti skanavimą
+    pradedamButton.addEventListener('click', () => {
+      mainImage.style.display = 'none'; // Paslėpti paveikslėlį
+      pradedamButton.style.display = 'none'; // Paslėpti mygtuką
+      tekstasElement.style.display = 'block';
+      skanavimasPradetas = true;
+      pradetiVideo();
+    });
+
+    // Pradėti vaizdo srautą
+    function pradetiVideo() {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const constraints = { 
+          video: { facingMode: { exact: "environment" } },
+          audio: false
+        };
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(stream => {
+            video.srcObject = stream;
+            if (!barcodeDetector) {
+              barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+            }
+            videoContainer.style.display = 'block';
+            skanavimasPradetas = true;
+          })
+          .catch(err => {
+            tekstasElement.textContent = "Nepavyko įjungti kameros.";
+            console.error("Klaida įjungiant kamerą:", err);
+          });
+      }
+    }
+
+    
+    // Nuskaityti QR kodus
+    function detectCode() {
+      if (!barcodeDetector || !skanavimasPradetas) return;
+
+      barcodeDetector.detect(video)
+        .then(codes => {
+          if (codes.length === 0) return;
+
+          for (const barcode of codes) {
+            console.log("QR kodas:", barcode.rawValue);
+            tekstasElement.textContent = "Pasiruošę groti.";
+            skanavimasPradetas = false;
+
+            // Sustabdyti kamerą
+            video.srcObject.getTracks().forEach(track => track.stop());
+            videoContainer.style.display = 'none';
+            controls.style.display = 'block';
+
+            // Nustatyti garso šaltinį
+            audioElement.src = barcode.rawValue;
+
+            // Priskirti pradinę mygtuko klasę ir tekstą
+            grotiButton.classList.remove('stabdyti');
+            grotiButton.classList.add('groti');
+            grotiButton.textContent = "Groti";
+            skanavimasIsNaujo.classList.add('skanavimasIsNaujo');
+
+
+            break; // Pabaigti, kai nuskaitytas pirmas kodas
+          }
+        })
+        .catch(err => {
+          console.error("QR kodo nuskaitymo klaida:", err);
+        });
+    }
+
+    // Groti arba stabdyti garso failą
+    grotiButton.addEventListener('click', () => {
+        if (muzikaGroja) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+            muzikaGroja = false;
+            tekstasElement.textContent = "Muzika sustabdyta.";
+            grotiButton.classList.remove('stabdyti');
+            grotiButton.classList.add('groti');
+            grotiButton.textContent = "Groti";
+        } else {
+            audioElement.play()
+            .then(() => {
+                muzikaGroja = true;
+                tekstasElement.textContent = "Groja muzika...";
+                grotiButton.classList.remove('groti');
+                grotiButton.classList.add('stabdyti');
+                grotiButton.textContent = "Stabdyti";
+            })
+            .catch(err => {
+                console.error("Garso paleidimo klaida:", err);
+                tekstasElement.textContent = "Nepavyko paleisti garso.";
+            });
+        }
+    });
+    // Pradėti skanavimą iš naujo
+    skanavimasIsNaujo.addEventListener('click', () => {
+      tekstasElement.textContent = "Nuskaitykite QR kodą...";
+      controls.style.display = 'none';
+      videoContainer.style.display = 'block';
+
+      audioElement.pause();
+      audioElement.currentTime = 0;
+      muzikaGroja = false;
+      grotiButton.textContent = "Groti";
+
+      pradetiVideo();
+    });
+
+    // Stebėti ir vykdyti QR nuskaitymą periodiškai
+    setInterval(detectCode, 500);
+  </script>
+</body>
+</html>
