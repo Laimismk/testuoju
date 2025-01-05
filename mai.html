@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LT muzikos skaneris</title>
+</head>
+<body>
+  <h2 style="text-align: center;">LT muzikos skaneris</h2>
+  <h1 id="tekstas" style="text-align: center;">Pasiruošę nuskaityti</h1>
+  <button id="pradedamButton" style="padding: 10px 20px; font-size: 18px;">Pradedam žaisti</button>
+  <video id="video" width="100%" height="100%" autoplay></video>
+  <audio id="audio" style="display: none;"></audio>
+
+  <script>
+    const video = document.getElementById('video');
+    const audioElement = document.getElementById('audio');
+    const tekstasElement = document.getElementById('tekstas');
+    const pradedamButton = document.getElementById('pradedamButton');
+
+    let barcodeDetector;
+    let skanavimasPradetas = false;
+
+    // Mygtuko paspaudimas
+    pradedamButton.addEventListener('click', () => {
+      pradedamButton.style.display = 'none'; // Paslėpti mygtuką
+      tekstasElement.textContent = "Nuskaitykite QR kodą...";
+      skanavimasPradetas = true;
+      pradetiVideo();
+    });
+
+    // Funkcija pradėti vaizdo srautą ir QR nuskaitymą
+    function pradetiVideo() {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const constraints = { 
+          video: { facingMode: { exact: "environment" } },
+          audio: false
+        };
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(stream => {
+            video.srcObject = stream;
+            barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+            setInterval(detectCode, 500); // QR kodų aptikimas kas 500ms
+          })
+          .catch(err => {
+            tekstasElement.textContent = "Nepavyko įjungti kameros.";
+            console.error("Klaida įjungiant kamerą:", err);
+          });
+      }
+    }
+
+    // Funkcija aptikti QR kodus
+    function detectCode() {
+      if (!barcodeDetector || !skanavimasPradetas) return;
+
+      barcodeDetector.detect(video)
+        .then(codes => {
+          if (codes.length === 0) return;
+
+          for (const barcode of codes) {
+            console.log("QR kodas:", barcode.rawValue);
+            tekstasElement.textContent = "Grojam iš: " + barcode.rawValue;
+
+            // Nustatyti audio šaltinį ir paleisti
+            audioElement.src = barcode.rawValue;
+            audioElement.play()
+              .then(() => {
+                console.log("Garsas paleistas sėkmingai.");
+                skanavimasPradetas = false; // Sustabdyti po sėkmingo nuskaitymo
+              })
+              .catch(err => {
+                console.error("Garso paleidimo klaida:", err);
+                tekstasElement.textContent = "Nepavyko paleisti garso.";
+              });
+          }
+        })
+        .catch(err => {
+          console.error("QR kodo nuskaitymo klaida:", err);
+        });
+    }
+  </script>
+</body>
+</html>
