@@ -168,7 +168,36 @@
       }
     }
 
-    // Likusi programa
+        // Nuskaityti QR kodus
+        function detectCode() {
+      if (!barcodeDetector || !skanavimasPradetas) return;
+
+      barcodeDetector.detect(video)
+        .then(codes => {
+          if (codes.length === 0) return;
+
+          for (const barcode of codes) {
+            console.log("QR kodas:", barcode.rawValue);
+            tekstasElement.textContent = "Pasiruošę groti.";
+            skanavimasPradetas = false;
+
+            // Sustabdyti kamerą
+            video.srcObject.getTracks().forEach(track => track.stop());
+            videoContainer.style.display = 'none';
+            controls.style.display = 'block';
+
+            // Nustatyti garso šaltinį
+            audioElement.src = barcode.rawValue;
+
+            break; // Pabaigti, kai nuskaitytas pirmas kodas
+          }
+        })
+        .catch(err => {
+          console.error("QR kodo nuskaitymo klaida:", err);
+        });
+    }
+
+    // Groti arba stabdyti garso failą
     grotiButton.addEventListener('click', () => {
       if (!muzikaGroja) {
         grotiButton.textContent = "Stabdyti";
@@ -183,6 +212,7 @@
       }
     });
 
+    // Pradėti skanavimą iš naujo
     skanavimasIsNaujo.addEventListener('click', () => {
       audioElement.pause();
       audioElement.currentTime = 0;
@@ -190,6 +220,9 @@
       videoContainer.style.display = 'block';
       pradetiVideo();
     });
+
+    // Stebėti ir vykdyti QR nuskaitymą periodiškai
+    setInterval(detectCode, 500);
   </script>
 </body>
 </html>
