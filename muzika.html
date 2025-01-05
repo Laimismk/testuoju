@@ -6,7 +6,8 @@
   <title>LT muzikos skaneris</title>
 </head>
 <body>
-    <h2 style="text-align: center;">LT muzikos skaneris2</h2>
+    <h2 style="text-align: center;">LT muzikos skaneris3</h2>
+    <h1 id="tekstas" style="text-align: center;">Q1</h1>
     <button id="pradedamButton" width="100%" style="padding: 2% 4%; font-size: 18px;">
         Pradedam žaisti
     </button>
@@ -22,12 +23,19 @@
 
     <script>
 
+        // Create new barcode detector
+        const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+        const audioElement = document.getElementById('audio');
+        let pradedamSkanavima=false
+        let pradedamGrojima=false
+
         // Pradinis mygtukas
         pradedamButton.addEventListener('click', () => {
             pradedamSkanavima=true
             pradedamGrojima=false
             pradedamButton.style.display = 'none'; // Paslepiam mygtuką kai paspaudžiam   
-            ijungiamVideo()     
+            ijungiamVideo() 
+            //setInterval(detectCode, 100);
         });
 
 
@@ -46,6 +54,36 @@
                 // Start video stream
                 navigator.mediaDevices.getUserMedia(constraints).then(stream => video.srcObject = stream);
             }
+        }
+
+        function detectCode(){
+            // Start detecting codes on to the video element
+            barcodeDetector.detect(video).then(codes => {
+                // If no codes exit function
+                if (codes.length === 0) return;    
+                for (const barcode of codes)  {
+                // Log the barcode to the console
+                console.log(barcode)
+                //document.getElementById("tekstas").textContent=barcode.rawValue
+                document.getElementById("tekstas").textContent="Grojam5"
+                // Show message "NUSKAITYTA" on the screen
+                //messageElement.style.display = 'block';  // Display the message
+                //setTimeout(() => {
+                //  messageElement.style.display = 'none'; // Hide message after 2 seconds
+                //}, 2000);
+                // Set the audio source and play the audio
+                //if (audioEnabled) {
+                //    audioElement.src = barcode.rawValue;  // Set the source to the QR code URL
+                //    audioElement.play().catch(err => {
+                //    console.error("Garso paleidimo klaida:", err);
+                //    document.getElementById("tekstas").textContent= "Nepavyko paleisti garso.";
+                //    });
+                //}
+                }
+            }).catch(err => {
+                // Log an error if one happens
+                console.error(err);
+            })
         }
 
 
