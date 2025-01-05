@@ -200,28 +200,29 @@
 
     // Groti arba stabdyti garso failą
     grotiButton.addEventListener('click', () => {
-      if (muzikaGroja) {
-        audioElement.pause();
-        audioElement.currentTime = 0;
-        muzikaGroja = false;
-        tekstasElement.textContent = "Muzika sustabdyta.";
-        grotiButton.classList.add('groti');
-        grotiButton.textContent = "Groti";
-      } else {
-        audioElement.play()
-          .then(() => {
-            muzikaGroja = true;
-            tekstasElement.textContent = "Groja muzika...";
-            grotiButton.classList.add('stabdyti');
-            grotiButton.textContent = "Stabdyti";
-          })
-          .catch(err => {
-            console.error("Garso paleidimo klaida:", err);
-            tekstasElement.textContent = "Nepavyko paleisti garso.";
-          });
-      }
+        if (muzikaGroja) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+            muzikaGroja = false;
+            tekstasElement.textContent = "Muzika sustabdyta.";
+            grotiButton.classList.remove('stabdyti');
+            grotiButton.classList.add('groti');
+            grotiButton.textContent = "Groti";
+        } else {
+            audioElement.play()
+            .then(() => {
+                muzikaGroja = true;
+                tekstasElement.textContent = "Groja muzika...";
+                grotiButton.classList.remove('groti');
+                grotiButton.classList.add('stabdyti');
+                grotiButton.textContent = "Stabdyti";
+            })
+            .catch(err => {
+                console.error("Garso paleidimo klaida:", err);
+                tekstasElement.textContent = "Nepavyko paleisti garso.";
+            });
+        }
     });
-
     // Pradėti skanavimą iš naujo
     skanavimasIsNaujo.addEventListener('click', () => {
       tekstasElement.textContent = "Nuskaitykite QR kodą...";
