@@ -255,42 +255,43 @@
 
     // Pradėti vizualizaciją
     function drawVisualizer() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
-        const WIDTH = canvas.width;
-        const HEIGHT = canvas.height;
-        const barWidth = (WIDTH / bufferLength) * 2.5;
-        let barHeight;
+      const WIDTH = canvas.width;
+      const HEIGHT = canvas.height;
 
-        canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
+      canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
 
+      // Gauti laiko domeno duomenis (banga)
+      analyser.getByteTimeDomainData(dataArray);
 
+      canvasContext.lineWidth = 2; // Bangos linijos storis
+      canvasContext.strokeStyle = 'rgb(0, 255, 0)'; // Bangos spalva
+      canvasContext.beginPath();
 
-        canvas.width = window.innerWidth;
-        analyser.getByteTimeDomainData(dataArray);
-        canvasContext.beginPath();
-        let sliceWidth = canvas.width * 1.0 / bufferLength;
-        let x = 0;
+      const sliceWidth = WIDTH / bufferLength;
+      let x = 0;
 
-        for (let i = 0; i < bufferLength; i++) {
-            let v = dataArray[i] / 128.0;
-            let y = v * canvas.height / 2;
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0; // Normalizuoti reikšmę
+        const y = v * HEIGHT / 2; // Aukštis pagal signalą
 
         if (i === 0) {
-            canvasContext.moveTo(x, y);
+          canvasContext.moveTo(x, y); // Pradėti liniją
         } else {
-            canvasContext.lineTo(x, y);
+          canvasContext.lineTo(x, y); // Tęsti liniją
         }
 
         x += sliceWidth;
-        }
+      }
 
-        canvasContext.lineTo(canvas.width, canvas.height / 2);
-        canvasContext.stroke();
+      canvasContext.lineTo(WIDTH, HEIGHT / 2); // Užbaigti liniją viduryje
+      canvasContext.stroke();
 
-        requestAnimationFrame(drawVisualizer);
+      requestAnimationFrame(drawVisualizer);
     }
+
 
     // Pradėti groti muziką ir rodyti vizualizaciją
     audioElement.addEventListener('play', () => {
