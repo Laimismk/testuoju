@@ -49,8 +49,10 @@
         navigator.mediaDevices.getUserMedia(constraints)
           .then(stream => {
             video.srcObject = stream;
-            barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
-            setInterval(detectCode, 500);
+            if (!barcodeDetector) {
+              barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+            }
+            skanavimasPradetas = true;
           })
           .catch(err => {
             tekstasElement.textContent = "Nepavyko įjungti kameros.";
@@ -106,8 +108,16 @@
       tekstasElement.textContent = "Nuskaitykite QR kodą...";
       controls.style.display = 'none';
       videoContainer.style.display = 'block';
+
+      // Sustabdyti muziką
+      audioElement.pause();
+      audioElement.currentTime = 0;
+
       pradetiVideo();
     });
+
+    // Stebėti ir vykdyti QR nuskaitymą periodiškai
+    setInterval(detectCode, 500);
   </script>
 </body>
 </html>
