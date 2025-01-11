@@ -131,28 +131,31 @@
       object-fit: cover;
     }
     #overlay {
+        display: none; /* Paslėpta pagal nutylėjimą */
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.6); /* Pusiau permatomas sluoksnis */
-        z-index: 2; /* Virš video elemento */
-        pointer-events: none; /* Kad nesutrukdytų vartotojo veiksmams */
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 2;
+        pointer-events: none;
     }
 
     #target {
+        display: none; /* Paslėpta pagal nutylėjimą */
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 200px; /* Taikinio dydis */
+        width: 200px;
         height: 200px;
-        border: 3px solid #fff; /* Taikinio kraštinės spalva */
-        border-radius: 50%; /* Apvalus taikinys */
+        border: 3px solid #fff;
+        border-radius: 50%;
         transform: translate(-50%, -50%);
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7); /* Šviesos efektas */
-        animation: pulsate 1.5s infinite ease-in-out; /* Pulsacijos efektas */
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        animation: pulsate 1.5s infinite ease-in-out;
     }
+
 
     @keyframes pulsate {
         0% {
@@ -231,66 +234,71 @@
     // Pradėti vaizdo srautą
     function pradetiVideo() {
         const overlayText = document.getElementById('overlayText');
-  
+        const overlay = document.getElementById('overlay');
+        const target = document.getElementById('target');
+
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const constraints = { 
-            video: { facingMode: { exact: "environment" } },
-            audio: false
+                video: { facingMode: { exact: "environment" } },
+                audio: false
             };
             navigator.mediaDevices.getUserMedia(constraints)
-            .then(stream => {
-                video.srcObject = stream;
-                if (!barcodeDetector) {
-                barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
-                }
-                videoContainer.style.display = 'block';
-                overlayText.style.display = 'block'; // Rodyti užrašą
-                skanavimasPradetas = true;
-            })
-            .catch(err => {
-                tekstasElement.textContent = "Nepavyko įjungti kameros.";
-                console.error("Klaida įjungiant kamerą:", err);
-            });
+                .then(stream => {
+                    video.srcObject = stream;
+                    if (!barcodeDetector) {
+                        barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+                    }
+                    videoContainer.style.display = 'block';
+                    overlayText.style.display = 'block'; // Rodyti užrašą
+                    overlay.style.display = 'block'; // Rodyti pusiau permatomą sluoksnį
+                    target.style.display = 'block'; // Rodyti taikinį
+                    skanavimasPradetas = true;
+                })
+                .catch(err => {
+                    tekstasElement.textContent = "Nepavyko įjungti kameros.";
+                    console.error("Klaida įjungiant kamerą:", err);
+                });
         }
     }
 
+
     function detectCode() {
-      if (!barcodeDetector || !skanavimasPradetas) return;
+    if (!barcodeDetector || !skanavimasPradetas) return;
 
-      barcodeDetector.detect(video)
+    barcodeDetector.detect(video)
         .then(codes => {
-          if (codes.length === 0) return;
+            if (codes.length === 0) return;
 
-          for (const barcode of codes) {
-            console.log("QR kodas:", barcode.rawValue);
+            for (const barcode of codes) {
+                console.log("QR kodas:", barcode.rawValue);
 
-            // Parodyti užfiksavimo efektą
-            const target = document.getElementById('target');
-            target.style.borderColor = '#4CAF50'; // Žalia spalva, kai kodas aptiktas
-            setTimeout(() => {
-              target.style.borderColor = '#fff'; // Grįžta į pradinę būseną
-            }, 1000);
+                const overlayText = document.getElementById('overlayText');
+                const overlay = document.getElementById('overlay');
+                const target = document.getElementById('target');
 
-            // QR kodo apdorojimas
-            tekstasElement.textContent = "QR kodas aptiktas!";
-            skanavimasPradetas = false;
+                tekstasElement.textContent = "QR kodas aptiktas!";
+                skanavimasPradetas = false;
 
-            // Sustabdyti kamerą
-            video.srcObject.getTracks().forEach(track => track.stop());
-            videoContainer.style.display = 'none';
-            controls.style.display = 'block';
+                // Sustabdyti kamerą
+                video.srcObject.getTracks().forEach(track => track.stop());
+                videoContainer.style.display = 'none';
+                controls.style.display = 'block';
 
-            // Nustatyti garso šaltinį
-            audioElement.src = barcode.rawValue;
+                // Paslėpti papildomus elementus
+                overlay.style.display = 'none';
+                target.style.display = 'none';
+                overlayText.style.display = 'none';
 
-            break; // Pabaigti, kai nuskaitytas pirmas kodas
-          }
+                // Nustatyti garso šaltinį
+                audioElement.src = barcode.rawValue;
+
+                break; // Pabaigti, kai nuskaitytas pirmas kodas
+            }
         })
         .catch(err => {
-          console.error("QR kodo nuskaitymo klaida:", err);
+            console.error("QR kodo nuskaitymo klaida:", err);
         });
     }
-
 
     
     // Nuskaityti QR kodus
