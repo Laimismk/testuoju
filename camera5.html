@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotoaparato ekranas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+        }
+
+        .camera-frame {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            border: 2px solid transparent; /* Nematomos ribos */
+        }
+
+        .corner {
+            position: absolute;
+            width: 25%;
+            height: 20%;
+        }
+
+        .vidinis {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+        }
+
+        /* Kampų stiliai */
+        .top-left {
+            top: 0;
+            left: 0;
+            border-top: 3px solid white;
+            border-left: 3px solid white;
+        }
+
+        .top-right {
+            top: 0;
+            right: 0;
+            border-top: 3px solid white;
+            border-right: 3px solid white;
+        }
+
+        .bottom-left {
+            bottom: 0;
+            left: 0;
+            border-bottom: 3px solid white;
+            border-left: 3px solid white;
+        }
+
+        .bottom-right {
+            bottom: 0;
+            right: 0;
+            border-bottom: 3px solid white;
+            border-right: 3px solid white;
+        }
+
+        /* Vidiniai kampukai */
+        .vtop-left {
+            top: 50%;
+            left: 50%;
+            transform: translate(-150%, -150%);
+            border-top: 2px solid white;
+            border-left: 2px solid white;
+        }
+
+        .vtop-right {
+            top: 50%;
+            right: 50%;
+            transform: translate(150%, -150%);
+            border-top: 2px solid white;
+            border-right: 2px solid white;
+        }
+
+        .vbottom-left {
+            bottom: 50%;
+            left: 50%;
+            transform: translate(-150%, 150%);
+            border-bottom: 2px solid white;
+            border-left: 2px solid white;
+        }
+
+        .vbottom-right {
+            bottom: 50%;
+            right: 50%;
+            transform: translate(150%, 150%);
+            border-bottom: 2px solid white;
+            border-right: 2px solid white;
+        }
+
+        .camera-center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .camera-text {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="camera-frame">
+        <div class="camera-text">Ieškomas QR kodas</div>
+        <div class="camera-center-circle"></div>
+        <!-- Keturi kampai -->
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+        <!-- Vidiniai kampukai -->
+        <div class="vidinis vtop-left"></div>
+        <div class="vidinis vtop-right"></div>
+        <div class="vidinis vbottom-left"></div>
+        <div class="vidinis vbottom-right"></div>
+
+    </div>
+</body>
+</html>
