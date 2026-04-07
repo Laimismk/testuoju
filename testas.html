@@ -7,27 +7,25 @@
   <style>
     /* CSS Kintamieji temoms */
     :root {
-      --bg-gradient: radial-gradient(circle at center, #0a1128 0%, #000000 100%);
+      /* Tamsi tema - visiškai juodas fonas */
+      --bg: #000000;
       --text-color: #ffffff;
-      --accent-color: #00d2ff;
+      --accent-color: #00d2ff; /* Melsva */
       --accent-glow: rgba(0, 210, 255, 0.5);
-      --btn-scan-bg: #ffffff;
-      --btn-scan-text: #000000;
       --timer-glow: rgba(0, 210, 255, 0.8);
     }
 
     body.light-theme {
-      --bg-gradient: radial-gradient(circle at center, #e0e5ec 0%, #ffffff 100%);
-      --text-color: #1a1a1a;
-      --accent-color: #0056b3;
-      --accent-glow: rgba(0, 86, 179, 0.3);
-      --btn-scan-bg: #1a1a1a;
-      --btn-scan-text: #ffffff;
-      --timer-glow: rgba(0, 86, 179, 0.4);
+      /* Šviesi tema - šviesus fonas */
+      --bg: radial-gradient(circle at center, #e0e5ec 0%, #ffffff 100%);
+      --text-color: #1a1a1a; /* Tamsus tekstas, kad matytųsi ant šviesaus fono */
+      --accent-color: #00d2ff; /* Ekvalaizeris ir mygtukai lieka melsvi */
+      --accent-glow: rgba(0, 210, 255, 0.3);
+      --timer-glow: rgba(0, 210, 255, 0.4);
     }
 
     body {
-      background: var(--bg-gradient);
+      background: var(--bg);
       color: var(--text-color);
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -35,7 +33,7 @@
       transition: background 0.4s ease, color 0.4s ease;
     }
 
-    /* Temos perjungiklis (Switch) */
+    /* Temos perjungiklis (Switch be teksto) */
     .theme-switch-wrapper {
       position: absolute;
       top: 20px;
@@ -95,14 +93,6 @@
     input:checked + .slider:before {
       transform: translateX(22px);
       background-color: #1a1a1a;
-    }
-
-    .theme-label {
-      margin-left: 10px;
-      font-size: 14px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
     }
 
     /* Pagrindiniai elementai */
@@ -174,22 +164,25 @@
       transition: all 0.3s ease;
     }
 
+    /* Mygtukas GROTI - melsvas */
     #grotiButton.groti {
-      background: #4CAF50;
+      background: var(--accent-color);
       color: #fff;
-      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+      box-shadow: 0 4px 15px var(--accent-glow);
     }
 
+    /* Mygtukas STABDYTI - raudonas */
     #grotiButton.stabdyti {
       background: #F44336;
       color: #fff;
       box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
     }
 
+    /* Mygtukas SKANUOTI IŠ NAUJO - prisitaiko prie fono, kad visada matytųsi */
     #skanavimasIsNaujo {
-      background: var(--btn-scan-bg);
-      color: var(--btn-scan-text);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      background: transparent;
+      color: var(--text-color);
+      border: 2px solid var(--text-color) !important;
     }
 
     #controls button:hover {
@@ -234,15 +227,13 @@
       height: 250px;
       border: 3px solid var(--accent-color);
       border-radius: 20px;
-      transform: translate(-50%, -50%); /* Numatyta pozicija centre */
+      transform: translate(-50%, -50%);
       box-shadow: 0 0 20px var(--accent-glow), inset 0 0 20px var(--accent-glow);
       animation: pulsate 2s infinite ease-in-out;
-      /* Greitas perėjimas (0.2s), kai JS pakeičia dydi, rotaciją ir vietą */
       transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
       transform-origin: center;
     }
 
-    /* Efektas kai pagaunamas barkodas (blykstė) */
     #target.scanned {
       border-color: #fff;
       background-color: rgba(255, 255, 255, 0.4);
@@ -304,7 +295,6 @@
       <input type="checkbox" id="checkbox" />
       <div class="slider round"></div>
     </label>
-    <span class="theme-label" id="themeLabel">Tamsi</span>
   </div>
 
   <img id="mainImage" src="main.png" alt="Main Image" onerror="this.style.display='none'"/>
@@ -323,7 +313,7 @@
   
   <div id="controls">
     <button id="grotiButton" class="groti">Groti</button>
-    <button id="skanavimasIsNaujo" id="skanavimasIsNaujo">Skanuoti iš naujo</button>
+    <button id="skanavimasIsNaujo">Skanuoti iš naujo</button>
   </div>
   
   <audio id="audio" style="display: none;" crossorigin="anonymous"></audio>
@@ -345,15 +335,12 @@
     
     // Temos perjungimo logika
     const toggleSwitch = document.getElementById('checkbox');
-    const themeLabel = document.getElementById('themeLabel');
     
     toggleSwitch.addEventListener('change', function(e) {
       if (e.target.checked) {
         document.body.classList.add('light-theme');
-        themeLabel.textContent = 'Šviesi';
       } else {
         document.body.classList.remove('light-theme');
-        themeLabel.textContent = 'Tamsi';
       }
     });
 
@@ -449,7 +436,6 @@
 
                     let renderWidth, renderHeight, offsetX = 0, offsetY = 0;
 
-                    // Apskaičiuojame kaip video užpildo ekraną (object-fit: cover logika)
                     if (containerRatio > videoRatio) {
                         renderWidth = cw;
                         renderHeight = cw / videoRatio;
@@ -460,13 +446,11 @@
                         offsetX = (cw - renderWidth) / 2;
                     }
 
-                    // Mapiname taškus į ekrano koordinates
                     const pts = barcode.cornerPoints.map(p => ({
                         x: (p.x / vw) * renderWidth + offsetX,
                         y: (p.y / vh) * renderHeight + offsetY
                     }));
 
-                    // Randame centrą, plotį, aukštį ir pasvirimo kampą
                     const cx = (pts[0].x + pts[1].x + pts[2].x + pts[3].x) / 4;
                     const cy = (pts[0].y + pts[1].y + pts[2].y + pts[3].y) / 4;
                     
@@ -480,7 +464,6 @@
 
                     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
-                    // Pritaikiame CSS transformacijas (su trupučiu padding'o gražiam rėmui)
                     const padding = 30;
                     target.style.width = `${width + padding}px`;
                     target.style.height = `${height + padding}px`;
@@ -489,10 +472,8 @@
                     target.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
                 }
 
-                // Pridedame blykstės efektą
                 target.classList.add('scanned');
 
-                // Greitesnis perėjimas prie muzikos (300ms vietoje 600ms)
                 setTimeout(() => {
                     video.srcObject.getTracks().forEach(track => track.stop());
                     videoContainer.style.display = 'none';
@@ -538,10 +519,9 @@
         const HEIGHT = visualizerCanvas.height;
         const centerY = HEIGHT * 0.65;
         
-        // Paimame temų spalvas dinamiškai
         const isLight = document.body.classList.contains('light-theme');
-        const accentColor = isLight ? '#0056b3' : '#00d2ff';
-        const darkAccentColor = isLight ? '#002a5c' : '#0022aa';
+        const accentColor = '#00d2ff'; // Lieka melsva abiejose temose
+        const darkAccentColor = '#0022aa'; // Lieka tamsiai melsva
         const centerLineColor = isLight ? '#1a1a1a' : '#ffffff';
 
         canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
@@ -624,7 +604,6 @@
         audioElement.currentTime = 0;
         timerElement.textContent = "0:00";
 
-        // Atstatome taikinį atgal į centrą
         target.classList.remove('scanned');
         target.style.width = '250px';
         target.style.height = '250px';
@@ -635,7 +614,6 @@
         pradetiVideo();
     });
 
-    // Greitesnis skanavimo atnaujinimas - tikrinama kas 150ms
     setInterval(detectCode, 150);
   </script>
 </body>
