@@ -7,25 +7,25 @@
   <style>
     /* CSS Kintamieji temoms */
     :root {
-      /* Tamsi tema - visiškai juodas fonas */
+      /* Tamsi tema */
       --bg: #000000;
       --text-color: #ffffff;
       --accent-color: #00d2ff;
       --accent-glow: rgba(0, 210, 255, 0.5);
       
-      /* Laikmatis: juodas tekstas ant juodo fono, tik švytėjimas matosi */
+      /* Laikmatis ir mygtukas: juodas tekstas ant juodo fono, tik švytėjimas matosi */
       --timer-text: #000000;
       --timer-glow: #00d2ff; 
     }
 
     body.light-theme {
-      /* Šviesi tema - šviesus fonas */
+      /* Šviesi tema */
       --bg: radial-gradient(circle at center, #e0e5ec 0%, #ffffff 100%);
       --text-color: #1a1a1a;
       --accent-color: #00d2ff;
       --accent-glow: rgba(0, 210, 255, 0.3);
       
-      /* Laikmatis: baltas tekstas ant balto fono, matosi tik švytėjimas */
+      /* Laikmatis ir mygtukas: baltas tekstas ant balto fono, matosi tik švytėjimas */
       --timer-text: #ffffff;
       --timer-glow: #00d2ff;
     }
@@ -182,10 +182,13 @@
       box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
     }
 
+    /* Kita daina mygtukas kaip ir laikmatis - nematomas tekstas, tik švytėjimas */
     #skanavimasIsNaujo {
       background: transparent;
-      color: var(--text-color);
-      border: 2px solid var(--text-color) !important;
+      color: var(--timer-text);
+      border: 2px solid var(--timer-glow) !important;
+      text-shadow: 0 0 5px var(--timer-glow), 0 0 15px var(--timer-glow);
+      box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px var(--accent-glow);
     }
 
     #controls button:hover {
@@ -281,8 +284,7 @@
       transform: translate(-50%, -50%);
       font-size: 90px;
       font-weight: 700;
-      color: var(--timer-text); /* Dinaminis šrifto spalvos prisitaikymas */
-      /* Kelių sluoksnių švytėjimas, kad siluetas gerai matytųsi */
+      color: var(--timer-text);
       text-shadow: 
         0 0 5px var(--timer-glow),
         0 0 15px var(--timer-glow), 
@@ -319,7 +321,7 @@
   
   <div id="controls">
     <button id="grotiButton" class="groti">Groti</button>
-    <button id="skanavimasIsNaujo">Skanuoti iš naujo</button>
+    <button id="skanavimasIsNaujo">Kita daina</button>
   </div>
   
   <audio id="audio" style="display: none;" crossorigin="anonymous"></audio>
@@ -528,10 +530,12 @@
         const accentColor = '#00d2ff';
         const darkAccentColor = '#0022aa';
         const centerLineColor = isLight ? '#1a1a1a' : '#ffffff';
+        const fadeToColor = isLight ? '#ffffff' : '#000000'; // Atspindys susilieja su fonu
 
         canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
         analyser.getByteFrequencyData(dataArray);
 
+        // Nupiešiame centrinę liniją
         canvasContext.shadowBlur = isLight ? 5 : 15;
         canvasContext.shadowColor = accentColor;
         canvasContext.fillStyle = centerLineColor;
@@ -539,28 +543,44 @@
         canvasContext.shadowBlur = 0;
 
         const barWidth = (WIDTH / bufferLength) * 2.5; 
+        const squareSize = Math.max(1, barWidth - 4); // Kvadratėlio dydis
+        const gap = 3; // Tarpelis tarp kvadratėlių
+        const step = squareSize + gap;
         let x = 0;
 
         for (let i = 0; i < bufferLength; i++) {
             let barHeight = (dataArray[i] / 255) * (HEIGHT * 0.5);
             
             if (barHeight > 0) {
+                // Apskaičiuojame, kiek kvadratėlių tilps į stulpelį
+                const numSquares = Math.floor(barHeight / step);
+
+                // --- VIRŠUTINIS STULPELIS (Iš blokelių) ---
                 const grad = canvasContext.createLinearGradient(0, centerY, 0, centerY - barHeight);
                 grad.addColorStop(0, centerLineColor);
                 grad.addColorStop(0.2, accentColor);
                 grad.addColorStop(1, darkAccentColor);
-
                 canvasContext.fillStyle = grad;
-                canvasContext.fillRect(x, centerY - barHeight, barWidth - 4, barHeight);
 
-                canvasContext.globalAlpha = 0.4;
+                for (let s = 0; s < numSquares; s++) {
+                    let sqY = centerY - (s * step) - squareSize - 2; // -2 kad atitrauktume nuo ašies
+                    canvasContext.fillRect(x, sqY, squareSize, squareSize);
+                }
+
+                // --- APATINIS ATSPINDYS (Iš blokelių) ---
+                canvasContext.globalAlpha = 0.5;
                 const reflectGrad = canvasContext.createLinearGradient(0, centerY, 0, centerY + (barHeight * 0.6));
                 reflectGrad.addColorStop(0, centerLineColor);
-                reflectGrad.addColorStop(0.2, accentColor);
-                reflectGrad.addColorStop(1, darkAccentColor);
-                
+                reflectGrad.addColorStop(0.4, accentColor);
+                reflectGrad.addColorStop(1, fadeToColor); // Susilieja su fono spalva
                 canvasContext.fillStyle = reflectGrad;
-                canvasContext.fillRect(x, centerY + 2, barWidth - 4, barHeight * 0.6);
+
+                const numReflectSquares = Math.floor((barHeight * 0.6) / step);
+                for (let s = 0; s < numReflectSquares; s++) {
+                    let sqY = centerY + 4 + (s * step);
+                    canvasContext.fillRect(x, sqY, squareSize, squareSize);
+                }
+                
                 canvasContext.globalAlpha = 1.0;
             }
             x += barWidth;
@@ -607,7 +627,6 @@
             cancelAnimationFrame(visualizerAnimationId);
         }
         
-        // NAUJA: Pilnai išvalome animacijos drobę (Canvas), kad neliktų užšalusių stulpelių
         if (canvasContext) {
             canvasContext.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
         }
