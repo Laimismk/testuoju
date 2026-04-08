@@ -20,7 +20,7 @@
 
     body.light-theme {
       /* Šviesi tema */
-      --bg: radial-gradient(circle at center, #e0e5ec 0%, #ffffff 100%);
+      --bg: #ffffff; /* Padarome pilnai baltą, kad perėjimas būtų idealiai sklandus */
       --text-color: #1a1a1a;
       --accent-color: #00d2ff;
       --accent-glow: rgba(0, 210, 255, 0.3);
@@ -159,7 +159,7 @@
       width: 80%;
       max-width: 250px;
       height: 55px;
-      margin: 10px auto;
+      margin: 15px auto; /* Padidinam tarpą, kad atrodytų gražiau su ekvalaizeriu tarp jų */
       display: block;
       padding: 10px 20px;
       font-size: 18px;
@@ -182,7 +182,6 @@
       box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
     }
 
-    /* Kita daina mygtukas kaip ir laikmatis - nematomas tekstas, tik švytėjimas */
     #skanavimasIsNaujo {
       background: transparent;
       color: var(--timer-text);
@@ -267,19 +266,20 @@
       display: none;
     }
 
+    /* Dabar vizualizacija užima visą ekraną, kad galėtume tiksliai sulygiuoti horizontą */
     #audioVisualizer {
       position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;
       width: 100%;
-      height: 60%;
+      height: 100%;
       z-index: 1;
       display: none;
     }
 
     #timer {
       position: absolute;
-      top: 35%;
+      top: 30%; /* Pakeltas šiek tiek aukščiau, nes ekvalaizeris eina per mygtukus */
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 90px;
@@ -520,67 +520,65 @@
         if (!muzikaGroja) return;
 
         visualizerCanvas.width = window.innerWidth;
-        visualizerCanvas.height = window.innerHeight * 0.6;
+        visualizerCanvas.height = window.innerHeight; // Dabar per visą ekraną
 
         const WIDTH = visualizerCanvas.width;
         const HEIGHT = visualizerCanvas.height;
-        const centerY = HEIGHT * 0.65;
+        
+        // Randame tikslią poziciją tarp dviejų mygtukų, kad nustatytume horizontą
+        const btnGroti = grotiButton.getBoundingClientRect();
+        const btnKita = skanavimasIsNaujo.getBoundingClientRect();
+        let centerY = HEIGHT * 0.75; // Atsarginė reikšmė, jei mygtukai nematomi
+
+        if (btnGroti.height > 0 && btnKita.height > 0) {
+            // Vidurys yra lygiai tarp pirmo mygtuko apačios ir antro mygtuko viršaus
+            centerY = btnGroti.bottom + (btnKita.top - btnGroti.bottom) / 2;
+        }
         
         const isLight = document.body.classList.contains('light-theme');
         const accentColor = '#00d2ff';
         const darkAccentColor = '#0022aa';
-        const centerLineColor = isLight ? '#1a1a1a' : '#ffffff';
-        const fadeToColor = isLight ? '#ffffff' : '#000000'; // Atspindys susilieja su fonu
+        const bgThemeColor = isLight ? '#ffffff' : '#000000';
 
         canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
         analyser.getByteFrequencyData(dataArray);
 
-        // Nupiešiame centrinę liniją
-        canvasContext.shadowBlur = isLight ? 5 : 15;
-        canvasContext.shadowColor = accentColor;
-        canvasContext.fillStyle = centerLineColor;
-        canvasContext.fillRect(0, centerY, WIDTH, 2);
-        canvasContext.shadowBlur = 0;
+        // Subtili linija horizonte
+        canvasContext.fillStyle = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+        canvasContext.fillRect(0, centerY, WIDTH, 1);
 
         const barWidth = (WIDTH / bufferLength) * 2.5; 
-        const squareSize = Math.max(1, barWidth - 4); // Kvadratėlio dydis
-        const gap = 3; // Tarpelis tarp kvadratėlių
-        const step = squareSize + gap;
         let x = 0;
 
+        // Kad vizualizacija nesiremtų į patį ekrano viršų, ribojame maksimalų aukštį
+        const maxBarHeight = HEIGHT * 0.4; 
+
         for (let i = 0; i < bufferLength; i++) {
-            let barHeight = (dataArray[i] / 255) * (HEIGHT * 0.5);
+            let barHeight = (dataArray[i] / 255) * maxBarHeight;
             
             if (barHeight > 0) {
-                // Apskaičiuojame, kiek kvadratėlių tilps į stulpelį
-                const numSquares = Math.floor(barHeight / step);
-
-                // --- VIRŠUTINIS STULPELIS (Iš blokelių) ---
+                // --- VIRŠUTINIS STULPELIS ---
+                // Prasideda nuo fono spalvos (juoda/balta), viduryje neoninė, viršuje tamsiai mėlyna
                 const grad = canvasContext.createLinearGradient(0, centerY, 0, centerY - barHeight);
-                grad.addColorStop(0, centerLineColor);
-                grad.addColorStop(0.2, accentColor);
+                grad.addColorStop(0, bgThemeColor); 
+                grad.addColorStop(0.3, accentColor);
                 grad.addColorStop(1, darkAccentColor);
+
                 canvasContext.fillStyle = grad;
+                canvasContext.fillRect(x, centerY - barHeight, barWidth - 4, barHeight);
 
-                for (let s = 0; s < numSquares; s++) {
-                    let sqY = centerY - (s * step) - squareSize - 2; // -2 kad atitrauktume nuo ašies
-                    canvasContext.fillRect(x, sqY, squareSize, squareSize);
-                }
-
-                // --- APATINIS ATSPINDYS (Iš blokelių) ---
-                canvasContext.globalAlpha = 0.5;
-                const reflectGrad = canvasContext.createLinearGradient(0, centerY, 0, centerY + (barHeight * 0.6));
-                reflectGrad.addColorStop(0, centerLineColor);
-                reflectGrad.addColorStop(0.4, accentColor);
-                reflectGrad.addColorStop(1, fadeToColor); // Susilieja su fono spalva
-                canvasContext.fillStyle = reflectGrad;
-
-                const numReflectSquares = Math.floor((barHeight * 0.6) / step);
-                for (let s = 0; s < numReflectSquares; s++) {
-                    let sqY = centerY + 4 + (s * step);
-                    canvasContext.fillRect(x, sqY, squareSize, squareSize);
-                }
+                // --- APATINIS ATSPINDYS ---
+                // Prasideda nuo fono spalvos, trumpai blykšteli neonine ir grįžta į fono spalvą
+                canvasContext.globalAlpha = 0.6;
+                const reflectHeight = barHeight * 0.5;
+                const reflectGrad = canvasContext.createLinearGradient(0, centerY, 0, centerY + reflectHeight);
                 
+                reflectGrad.addColorStop(0, bgThemeColor);
+                reflectGrad.addColorStop(0.4, accentColor);
+                reflectGrad.addColorStop(1, bgThemeColor); // Ištirpsta fone
+                
+                canvasContext.fillStyle = reflectGrad;
+                canvasContext.fillRect(x, centerY, barWidth - 4, reflectHeight);
                 canvasContext.globalAlpha = 1.0;
             }
             x += barWidth;
