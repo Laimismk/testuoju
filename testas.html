@@ -10,18 +10,24 @@
       /* Tamsi tema - visiškai juodas fonas */
       --bg: #000000;
       --text-color: #ffffff;
-      --accent-color: #00d2ff; /* Melsva */
+      --accent-color: #00d2ff;
       --accent-glow: rgba(0, 210, 255, 0.5);
-      --timer-glow: rgba(0, 210, 255, 0.8);
+      
+      /* Laikmatis: juodas tekstas ant juodo fono, tik švytėjimas matosi */
+      --timer-text: #000000;
+      --timer-glow: #00d2ff; 
     }
 
     body.light-theme {
       /* Šviesi tema - šviesus fonas */
       --bg: radial-gradient(circle at center, #e0e5ec 0%, #ffffff 100%);
-      --text-color: #1a1a1a; /* Tamsus tekstas, kad matytųsi ant šviesaus fono */
-      --accent-color: #00d2ff; /* Ekvalaizeris ir mygtukai lieka melsvi */
+      --text-color: #1a1a1a;
+      --accent-color: #00d2ff;
       --accent-glow: rgba(0, 210, 255, 0.3);
-      --timer-glow: rgba(0, 210, 255, 0.4);
+      
+      /* Laikmatis: baltas tekstas ant balto fono, matosi tik švytėjimas */
+      --timer-text: #ffffff;
+      --timer-glow: #00d2ff;
     }
 
     body {
@@ -33,7 +39,7 @@
       transition: background 0.4s ease, color 0.4s ease;
     }
 
-    /* Temos perjungiklis (Switch be teksto) */
+    /* Temos perjungiklis */
     .theme-switch-wrapper {
       position: absolute;
       top: 20px;
@@ -164,21 +170,18 @@
       transition: all 0.3s ease;
     }
 
-    /* Mygtukas GROTI - melsvas */
     #grotiButton.groti {
       background: var(--accent-color);
       color: #fff;
       box-shadow: 0 4px 15px var(--accent-glow);
     }
 
-    /* Mygtukas STABDYTI - raudonas */
     #grotiButton.stabdyti {
       background: #F44336;
       color: #fff;
       box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
     }
 
-    /* Mygtukas SKANUOTI IŠ NAUJO - prisitaiko prie fono, kad visada matytųsi */
     #skanavimasIsNaujo {
       background: transparent;
       color: var(--text-color);
@@ -218,7 +221,6 @@
       pointer-events: none;
     }
 
-    /* Kvadratinis taikinys su perspektyva */
     #target {
       position: absolute;
       top: 50%;
@@ -279,8 +281,12 @@
       transform: translate(-50%, -50%);
       font-size: 90px;
       font-weight: 700;
-      color: var(--text-color);
-      text-shadow: 0 0 30px var(--timer-glow);
+      color: var(--timer-text); /* Dinaminis šrifto spalvos prisitaikymas */
+      /* Kelių sluoksnių švytėjimas, kad siluetas gerai matytųsi */
+      text-shadow: 
+        0 0 5px var(--timer-glow),
+        0 0 15px var(--timer-glow), 
+        0 0 30px var(--timer-glow);
       z-index: 10;
       display: none;
       font-variant-numeric: tabular-nums;
@@ -424,7 +430,6 @@
                 const barcode = codes[0];
                 skanavimasPradetas = false;
 
-                // --- PERSPEKTYVOS SKAIČIAVIMAS ---
                 if (barcode.cornerPoints && barcode.cornerPoints.length === 4) {
                     const vw = video.videoWidth;
                     const vh = video.videoHeight;
@@ -520,8 +525,8 @@
         const centerY = HEIGHT * 0.65;
         
         const isLight = document.body.classList.contains('light-theme');
-        const accentColor = '#00d2ff'; // Lieka melsva abiejose temose
-        const darkAccentColor = '#0022aa'; // Lieka tamsiai melsva
+        const accentColor = '#00d2ff';
+        const darkAccentColor = '#0022aa';
         const centerLineColor = isLight ? '#1a1a1a' : '#ffffff';
 
         canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
@@ -601,6 +606,12 @@
             muzikaGroja = false;
             cancelAnimationFrame(visualizerAnimationId);
         }
+        
+        // NAUJA: Pilnai išvalome animacijos drobę (Canvas), kad neliktų užšalusių stulpelių
+        if (canvasContext) {
+            canvasContext.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
+        }
+
         audioElement.currentTime = 0;
         timerElement.textContent = "0:00";
 
