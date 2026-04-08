@@ -5,103 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LT muzikos skaneris</title>
   <style>
-    /* CSS Kintamieji temoms */
-    :root {
-      /* Tamsi tema - visiškai juodas fonas */
-      --bg: #000000;
-      --text-color: #ffffff;
-      --accent-color: #00d2ff;
-      --accent-glow: rgba(0, 210, 255, 0.5);
-      
-      /* Laikmatis: juodas tekstas ant juodo fono, tik švytėjimas matosi */
-      --timer-text: #000000;
-      --timer-glow: #00d2ff; 
-    }
-
-    body.light-theme {
-      /* Šviesi tema - šviesus fonas */
-      --bg: radial-gradient(circle at center, #e0e5ec 0%, #ffffff 100%);
-      --text-color: #1a1a1a;
-      --accent-color: #00d2ff;
-      --accent-glow: rgba(0, 210, 255, 0.3);
-      
-      /* Laikmatis: baltas tekstas ant balto fono, matosi tik švytėjimas */
-      --timer-text: #ffffff;
-      --timer-glow: #00d2ff;
-    }
-
     body {
-      background: var(--bg);
-      color: var(--text-color);
+      background: radial-gradient(circle at center, #0a1128 0%, #000000 100%);
+      color: #fff;
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
-      transition: background 0.4s ease, color 0.4s ease;
+      overflow: hidden; /* Kad neatsirastų slankjuosčių nuo ekvalaizerio */
     }
 
-    /* Temos perjungiklis */
-    .theme-switch-wrapper {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      display: flex;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .theme-switch {
-      display: inline-block;
-      height: 30px;
-      position: relative;
-      width: 54px;
-    }
-
-    .theme-switch input {
-      display: none;
-    }
-
-    .slider {
-      background-color: #333;
-      bottom: 0;
-      cursor: pointer;
-      left: 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-      transition: .4s;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .slider:before {
-      background-color: #fff;
-      bottom: 2px;
-      content: "";
-      height: 22px;
-      left: 3px;
-      position: absolute;
-      transition: .4s;
-      width: 22px;
-    }
-
-    .slider.round {
-      border-radius: 34px;
-    }
-
-    .slider.round:before {
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: #ccc;
-      border-color: rgba(0,0,0,0.2);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(22px);
-      background-color: #1a1a1a;
-    }
-
-    /* Pagrindiniai elementai */
     #mainImage {
       position: absolute;
       top: 20%;
@@ -110,7 +21,7 @@
       width: 80%;
       max-width: 600px;
       border-radius: 20px;
-      box-shadow: 0 10px 30px var(--accent-glow);
+      box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
     }
 
     #pradedamButton {
@@ -122,31 +33,31 @@
       font-size: 20px;
       font-weight: bold;
       color: #fff;
-      background: linear-gradient(45deg, var(--accent-color), #3a7bd5);
+      background: linear-gradient(45deg, #00d2ff, #3a7bd5);
       border: none;
       border-radius: 30px;
       cursor: pointer;
-      box-shadow: 0 4px 15px var(--accent-glow);
+      box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
       transition: all 0.3s ease;
     }
 
     #pradedamButton:hover {
       transform: translateX(-50%) scale(1.05);
-      box-shadow: 0 6px 20px var(--accent-glow);
+      box-shadow: 0 6px 20px rgba(0, 210, 255, 0.6);
     }
 
     #tekstas {
       text-align: center;
-      margin-top: 80px;
+      margin-top: 40px;
       font-size: 24px;
       font-weight: 300;
-      color: var(--accent-color);
-      text-shadow: 0 0 10px var(--accent-glow);
+      color: #00d2ff;
+      text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
     }
 
     #controls {
       position: absolute;
-      bottom: 8%;
+      bottom: 10%;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
@@ -171,9 +82,9 @@
     }
 
     #grotiButton.groti {
-      background: var(--accent-color);
+      background: #4CAF50;
       color: #fff;
-      box-shadow: 0 4px 15px var(--accent-glow);
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
     }
 
     #grotiButton.stabdyti {
@@ -183,9 +94,10 @@
     }
 
     #skanavimasIsNaujo {
-      background: transparent;
-      color: var(--text-color);
-      border: 2px solid var(--text-color) !important;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      backdrop-filter: blur(5px);
     }
 
     #controls button:hover {
@@ -221,37 +133,40 @@
       pointer-events: none;
     }
 
+    /* Modernus skenavimo kvadratas */
     #target {
       position: absolute;
       top: 50%;
       left: 50%;
       width: 250px;
       height: 250px;
-      border: 3px solid var(--accent-color);
+      border: 3px solid #00d2ff;
       border-radius: 20px;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 20px var(--accent-glow), inset 0 0 20px var(--accent-glow);
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.5), inset 0 0 20px rgba(0, 210, 255, 0.3);
       animation: pulsate 2s infinite ease-in-out;
-      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-      transform-origin: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
+    /* Efektas kai pagaunamas barkodas */
     #target.scanned {
+      width: 180px;
+      height: 180px;
       border-color: #fff;
-      background-color: rgba(255, 255, 255, 0.4);
-      box-shadow: 0 0 40px #fff, inset 0 0 40px #fff;
+      background-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 50px #fff, inset 0 0 50px #fff;
       animation: none;
     }
 
     @keyframes pulsate {
-      0% { opacity: 0.8; box-shadow: 0 0 10px var(--accent-glow); }
-      50% { opacity: 1; box-shadow: 0 0 30px var(--accent-color), inset 0 0 20px var(--accent-color); }
-      100% { opacity: 0.8; box-shadow: 0 0 10px var(--accent-glow); }
+      0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.8; }
+      50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; box-shadow: 0 0 30px rgba(0, 210, 255, 0.8), inset 0 0 30px rgba(0, 210, 255, 0.5); }
+      100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.8; }
     }
 
     #overlayText {
       position: absolute;
-      top: 15%;
+      top: 20%;
       left: 50%;
       transform: translateX(-50%);
       color: #fff;
@@ -269,11 +184,12 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 60%;
+      height: 60%; /* Vizualizacija užima apatinę ekrano dalį */
       z-index: 1;
       display: none;
     }
 
+    /* Didelis grojimo laikas */
     #timer {
       position: absolute;
       top: 35%;
@@ -281,28 +197,16 @@
       transform: translate(-50%, -50%);
       font-size: 90px;
       font-weight: 700;
-      color: var(--timer-text); /* Dinaminis šrifto spalvos prisitaikymas */
-      /* Kelių sluoksnių švytėjimas, kad siluetas gerai matytųsi */
-      text-shadow: 
-        0 0 5px var(--timer-glow),
-        0 0 15px var(--timer-glow), 
-        0 0 30px var(--timer-glow);
+      color: #fff;
+      text-shadow: 0 0 30px rgba(0, 210, 255, 0.8);
       z-index: 10;
       display: none;
-      font-variant-numeric: tabular-nums;
+      font-variant-numeric: tabular-nums; /* Kad skaičiai nešokinėtų */
     }
 
   </style>
 </head>
 <body>
-
-  <div class="theme-switch-wrapper">
-    <label class="theme-switch" for="checkbox">
-      <input type="checkbox" id="checkbox" />
-      <div class="slider round"></div>
-    </label>
-  </div>
-
   <img id="mainImage" src="main.png" alt="Main Image" onerror="this.style.display='none'"/>
   <button id="pradedamButton">Pradedam žaidimą</button>
   <h2 id="tekstas" style="display: none;">Pasiruošę nuskaityti QR kodą...</h2>
@@ -319,7 +223,7 @@
   
   <div id="controls">
     <button id="grotiButton" class="groti">Groti</button>
-    <button id="skanavimasIsNaujo">Skanuoti iš naujo</button>
+    <button id="skanavimasIsNaujo" class="skanavimasIsNaujo">Skanuoti iš naujo</button>
   </div>
   
   <audio id="audio" style="display: none;" crossorigin="anonymous"></audio>
@@ -338,37 +242,29 @@
     const target = document.getElementById('target');
     const timerElement = document.getElementById('timer');
     const visualizerCanvas = document.getElementById('audioVisualizer');
-    
-    // Temos perjungimo logika
-    const toggleSwitch = document.getElementById('checkbox');
-    
-    toggleSwitch.addEventListener('change', function(e) {
-      if (e.target.checked) {
-        document.body.classList.add('light-theme');
-      } else {
-        document.body.classList.remove('light-theme');
-      }
-    });
 
     const canvasContext = visualizerCanvas.getContext('2d');
 
+    // Audio API kintamieji
     let audioContext;
     let analyser;
     let source;
     let dataArray;
     let bufferLength;
+
     let barcodeDetector;
     let skanavimasPradetas = false;
     let muzikaGroja = false;
     let visualizerAnimationId;
 
+    // Pradėti skanavimą
     pradedamButton.addEventListener('click', () => {
       mainImage.style.display = 'none';
       pradedamButton.style.display = 'none';
       tekstasElement.style.display = 'block';
       skanavimasPradetas = true;
       pradetiVideo();
-      initAudio();
+      initAudio(); // Inicijuojame AudioContext vartotojo veiksmo metu
     });
 
     function initAudio() {
@@ -380,21 +276,24 @@
             source.connect(analyser);
             analyser.connect(audioContext.destination);
 
-            analyser.fftSize = 64;
+            analyser.fftSize = 64; // Mažesnis skaičius - storesni vizualizacijos stulpeliai
             bufferLength = analyser.frequencyBinCount;
             dataArray = new Uint8Array(bufferLength);
         }
     }
 
+    // Pradėti vaizdo srautą
     function pradetiVideo() {
         const overlayText = document.getElementById('overlayText');
-        tekstasElement.style.display = 'none';
+        tekstasElement.style.display = 'none'; // Paslepiam viršutinį tekstą, kai kamera įjungta
   
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const constraints = { 
                 video: { facingMode: { exact: "environment" } },
                 audio: false
             };
+            
+            // Fallback, jei neras galinės kameros
             const fallbackConstraints = { video: { facingMode: "environment" } };
 
             navigator.mediaDevices.getUserMedia(constraints).catch(() => {
@@ -403,10 +302,11 @@
             .then(stream => {
                 video.srcObject = stream;
                 if (!barcodeDetector) {
+                    // Patikriname ar naršyklė palaiko BarcodeDetector API
                     if ('BarcodeDetector' in window) {
                         barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
                     } else {
-                        alert("Jūsų naršyklė nepalaiko barkodų skanavimo.");
+                        alert("Jūsų naršyklė nepalaiko barkodų skanavimo. Pabandykite Chrome Android sistemose.");
                     }
                 }
                 videoContainer.style.display = 'block';
@@ -416,10 +316,13 @@
             .catch(err => {
                 tekstasElement.style.display = 'block';
                 tekstasElement.textContent = "Nepavyko įjungti kameros.";
+                console.error("Klaida įjungiant kamerą:", err);
             });
         }
     }
 
+    
+    // Nuskaityti QR kodus
     function detectCode() {
         if (!barcodeDetector || !skanavimasPradetas || video.readyState !== video.HAVE_ENOUGH_DATA) return;
 
@@ -427,83 +330,47 @@
             .then(codes => {
                 if (codes.length === 0) return;
 
-                const barcode = codes[0];
-                skanavimasPradetas = false;
+                for (const barcode of codes) {
+                    skanavimasPradetas = false;
+                    console.log("QR kodas:", barcode.rawValue);
 
-                if (barcode.cornerPoints && barcode.cornerPoints.length === 4) {
-                    const vw = video.videoWidth;
-                    const vh = video.videoHeight;
-                    const cw = videoContainer.offsetWidth;
-                    const ch = videoContainer.offsetHeight;
+                    // Užfiksavimo (Morph) animacija ir šviesos efektas
+                    target.classList.add('scanned');
 
-                    const videoRatio = vw / vh;
-                    const containerRatio = cw / ch;
+                    // Palaukiam pusę sekundės, kad vartotojas pamatytų efektą, tada pereinam į grotuvą
+                    setTimeout(() => {
+                        video.srcObject.getTracks().forEach(track => track.stop());
+                        videoContainer.style.display = 'none';
+                        controls.style.display = 'block';
+                        visualizerCanvas.style.display = 'block';
+                        timerElement.style.display = 'block';
+                        timerElement.textContent = "0:00";
 
-                    let renderWidth, renderHeight, offsetX = 0, offsetY = 0;
+                        audioElement.src = barcode.rawValue;
+                        audioElement.load();
 
-                    if (containerRatio > videoRatio) {
-                        renderWidth = cw;
-                        renderHeight = cw / videoRatio;
-                        offsetY = (ch - renderHeight) / 2;
-                    } else {
-                        renderHeight = ch;
-                        renderWidth = ch * videoRatio;
-                        offsetX = (cw - renderWidth) / 2;
-                    }
+                        grotiButton.classList.remove('stabdyti');
+                        grotiButton.classList.add('groti');
+                        grotiButton.textContent = "Groti";
+                    }, 600);
 
-                    const pts = barcode.cornerPoints.map(p => ({
-                        x: (p.x / vw) * renderWidth + offsetX,
-                        y: (p.y / vh) * renderHeight + offsetY
-                    }));
-
-                    const cx = (pts[0].x + pts[1].x + pts[2].x + pts[3].x) / 4;
-                    const cy = (pts[0].y + pts[1].y + pts[2].y + pts[3].y) / 4;
-                    
-                    const dx = pts[1].x - pts[0].x;
-                    const dy = pts[1].y - pts[0].y;
-                    const width = Math.sqrt(dx*dx + dy*dy);
-                    
-                    const dx2 = pts[3].x - pts[0].x;
-                    const dy2 = pts[3].y - pts[0].y;
-                    const height = Math.sqrt(dx2*dx2 + dy2*dy2);
-
-                    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-
-                    const padding = 30;
-                    target.style.width = `${width + padding}px`;
-                    target.style.height = `${height + padding}px`;
-                    target.style.left = `${cx}px`;
-                    target.style.top = `${cy}px`;
-                    target.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+                    break;
                 }
-
-                target.classList.add('scanned');
-
-                setTimeout(() => {
-                    video.srcObject.getTracks().forEach(track => track.stop());
-                    videoContainer.style.display = 'none';
-                    controls.style.display = 'block';
-                    visualizerCanvas.style.display = 'block';
-                    timerElement.style.display = 'block';
-                    timerElement.textContent = "0:00";
-
-                    audioElement.src = barcode.rawValue;
-                    audioElement.load();
-
-                    grotiButton.classList.remove('stabdyti');
-                    grotiButton.classList.add('groti');
-                    grotiButton.textContent = "Groti";
-                }, 300);
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error("QR kodo nuskaitymo klaida:", err);
+            });
     }
 
+    // Laikmačio atnaujinimas
     audioElement.addEventListener('timeupdate', () => {
         const minutes = Math.floor(audioElement.currentTime / 60);
         const seconds = Math.floor(audioElement.currentTime % 60);
+        // Pridedame 0 priekyje, jei sekundžių mažiau nei 10
         timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     });
 
+    // Pabaigus groti dainai atstatyti mygtuką
     audioElement.addEventListener('ended', () => {
         muzikaGroja = false;
         grotiButton.classList.remove('stabdyti');
@@ -514,54 +381,58 @@
         timerElement.textContent = "0:00";
     });
 
+    // Vizualizacija (kaip nuotraukoje)
     function drawVisualizer() {
         if (!muzikaGroja) return;
 
         visualizerCanvas.width = window.innerWidth;
-        visualizerCanvas.height = window.innerHeight * 0.6;
+        visualizerCanvas.height = window.innerHeight * 0.6; // Užima 60% ekrano apačios
 
         const WIDTH = visualizerCanvas.width;
         const HEIGHT = visualizerCanvas.height;
-        const centerY = HEIGHT * 0.65;
-        
-        const isLight = document.body.classList.contains('light-theme');
-        const accentColor = '#00d2ff';
-        const darkAccentColor = '#0022aa';
-        const centerLineColor = isLight ? '#1a1a1a' : '#ffffff';
+        const centerY = HEIGHT * 0.65; // Pagrindinės linijos aukštis
 
         canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
+
         analyser.getByteFrequencyData(dataArray);
 
-        canvasContext.shadowBlur = isLight ? 5 : 15;
-        canvasContext.shadowColor = accentColor;
-        canvasContext.fillStyle = centerLineColor;
+        // Nupiešiame centrinę švytinčią liniją
+        canvasContext.shadowBlur = 15;
+        canvasContext.shadowColor = '#00d2ff';
+        canvasContext.fillStyle = '#ffffff';
         canvasContext.fillRect(0, centerY, WIDTH, 2);
-        canvasContext.shadowBlur = 0;
+        canvasContext.shadowBlur = 0; // Nuimame šešėlį stulpeliams
 
+        // Apskaičiuojame stulpelių plotį
         const barWidth = (WIDTH / bufferLength) * 2.5; 
         let x = 0;
 
         for (let i = 0; i < bufferLength; i++) {
+            // Ignoruojame pačius tyliausius dažnius ir pritaikome aukščio mastelį
             let barHeight = (dataArray[i] / 255) * (HEIGHT * 0.5);
             
             if (barHeight > 0) {
+                // Viršutinis stulpelis (pagrindinis)
                 const grad = canvasContext.createLinearGradient(0, centerY, 0, centerY - barHeight);
-                grad.addColorStop(0, centerLineColor);
-                grad.addColorStop(0.2, accentColor);
-                grad.addColorStop(1, darkAccentColor);
+                grad.addColorStop(0, '#ffffff'); // Balta prie ašies
+                grad.addColorStop(0.2, '#00d2ff'); // Žydra
+                grad.addColorStop(1, '#0022aa'); // Tamsiai mėlyna viršuje
 
                 canvasContext.fillStyle = grad;
+                
+                // Nupiešiame užapvalintus stulpelius (naudojant rect, bet padarant tarpus)
                 canvasContext.fillRect(x, centerY - barHeight, barWidth - 4, barHeight);
 
-                canvasContext.globalAlpha = 0.4;
+                // Apatinis stulpelis (atspindys)
+                canvasContext.globalAlpha = 0.4; // Atspindys blankesnis
                 const reflectGrad = canvasContext.createLinearGradient(0, centerY, 0, centerY + (barHeight * 0.6));
-                reflectGrad.addColorStop(0, centerLineColor);
-                reflectGrad.addColorStop(0.2, accentColor);
-                reflectGrad.addColorStop(1, darkAccentColor);
+                reflectGrad.addColorStop(0, '#ffffff');
+                reflectGrad.addColorStop(0.2, '#00d2ff');
+                reflectGrad.addColorStop(1, '#0022aa');
                 
                 canvasContext.fillStyle = reflectGrad;
                 canvasContext.fillRect(x, centerY + 2, barWidth - 4, barHeight * 0.6);
-                canvasContext.globalAlpha = 1.0;
+                canvasContext.globalAlpha = 1.0; // Atstatome permatomumą
             }
             x += barWidth;
         }
@@ -569,6 +440,7 @@
         visualizerAnimationId = requestAnimationFrame(drawVisualizer);
     }
 
+    // Groti arba stabdyti
     grotiButton.addEventListener('click', () => {
         if (audioContext && audioContext.state === 'suspended') {
             audioContext.resume();
@@ -581,6 +453,7 @@
             grotiButton.classList.add('groti');
             grotiButton.textContent = "Groti";
             cancelAnimationFrame(visualizerAnimationId);
+            // Išvalome ekraną sustabdžius
             canvasContext.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
         } else {
             audioElement.play()
@@ -589,12 +462,16 @@
                 grotiButton.classList.remove('groti');
                 grotiButton.classList.add('stabdyti');
                 grotiButton.textContent = "Stabdyti";
-                drawVisualizer();
+                drawVisualizer(); // Paleidžiame vizualizaciją
             })
-            .catch(err => alert("Nepavyko paleisti garso failo."));
+            .catch(err => {
+                console.error("Garso paleidimo klaida:", err);
+                alert("Nepavyko paleisti garso failo.");
+            });
         }
     });
 
+    // Skanuoti iš naujo
     skanavimasIsNaujo.addEventListener('click', () => {
         controls.style.display = 'none';
         visualizerCanvas.style.display = 'none';
@@ -606,26 +483,17 @@
             muzikaGroja = false;
             cancelAnimationFrame(visualizerAnimationId);
         }
-        
-        // NAUJA: Pilnai išvalome animacijos drobę (Canvas), kad neliktų užšalusių stulpelių
-        if (canvasContext) {
-            canvasContext.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
-        }
-
         audioElement.currentTime = 0;
         timerElement.textContent = "0:00";
 
+        // Atstatome taikinį į pradinę būseną
         target.classList.remove('scanned');
-        target.style.width = '250px';
-        target.style.height = '250px';
-        target.style.left = '50%';
-        target.style.top = '50%';
-        target.style.transform = 'translate(-50%, -50%)';
 
         pradetiVideo();
     });
 
-    setInterval(detectCode, 150);
+    // Stebėti QR kodus kas 300ms, kad per daug neapkrautume telefono procesoriaus
+    setInterval(detectCode, 300);
   </script>
 </body>
 </html>
